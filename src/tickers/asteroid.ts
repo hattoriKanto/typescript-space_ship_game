@@ -2,6 +2,16 @@ import * as PIXI from "pixi.js";
 import { Asteroid } from "../classes";
 import { config } from "../config";
 import { MovementHoryzontalDirection } from "../types";
+import { createTickerCallback } from "./tickerCallbacks";
+
+export const addAsteroidTicker = (
+  app: PIXI.Application<PIXI.Renderer>,
+  asteroid: Asteroid
+) => {
+  const tickerCallback = createTickerCallback(app, asteroid);
+  app.ticker.add(tickerCallback);
+  return tickerCallback;
+};
 
 export const asteroidMovementTicker = (
   app: PIXI.Application<PIXI.Renderer>,

@@ -9,11 +9,12 @@ export const config = {
     asteroid: 120,
   },
 
-  amount: { asteroid: 10 },
+  amount: { asteroid: 10, playerBullets: 10 },
 
   step: {
     player: 40,
-    asteroid: 2,
+    asteroid: 1.2,
+    bullet: 5,
     asteroidRotation: 0.01,
   },
 

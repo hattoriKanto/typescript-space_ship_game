@@ -7,7 +7,7 @@ export const addToTicker = (
   app.ticker.add(fn);
 };
 
-export const removeToTicker = (
+export const removeFromTicker = (
   app: PIXI.Application<PIXI.Renderer>,
   fn: () => void
 ) => {

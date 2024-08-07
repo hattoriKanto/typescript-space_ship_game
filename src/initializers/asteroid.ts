@@ -1,10 +1,13 @@
 import * as PIXI from "pixi.js";
 import { Asteroid } from "../classes";
-import { getRandomPosition, getNewID, getMovementDirection } from "../utils";
+import { getRandomPosition, getMovementDirection } from "../utils";
 import { config } from "../config";
-import { asteroidsStore } from "../main";
-import { addToTicker } from "../ticker";
-import { asteroidMovementTicker, asteroidRotationTicker } from "../tickers";
+import {
+  addAsteroidTicker,
+  asteroidMovementTicker,
+  asteroidRotationTicker,
+} from "../tickers";
+import { AsteroidStore } from "../classes/AsteroidStore";
 
 export const initAsteroid = async (
   app: PIXI.Application<PIXI.Renderer>,
@@ -18,8 +21,6 @@ export const initAsteroid = async (
   const asteroid = new Asteroid();
   // Add created sprite to the asteroid
   asteroid.initSprite = asteroidSprite;
-  // Set an id
-  asteroid.initId = getNewID();
   // Get random position
   const { initialX, initialY } = getRandomPosition(app, asteroid);
   // Set initial position
@@ -32,22 +33,22 @@ export const initAsteroid = async (
   // Set movement direction
   asteroid.setMovementDirection = getMovementDirection();
   // Set ticker functions
-  const tickerFunctions = () => {
-    asteroidMovementTicker(app, asteroid);
-    asteroidRotationTicker(asteroid);
-  };
-  addToTicker(app, tickerFunctions);
+  const tickerCallback = addAsteroidTicker(app, asteroid);
+  app.ticker.add(tickerCallback);
   // Return asteroid
   return asteroid;
 };
 
 // Initializer for asteroids
-export const initAsteroids = async (app: PIXI.Application<PIXI.Renderer>) => {
+export const initAsteroids = async (
+  app: PIXI.Application<PIXI.Renderer>,
+  asteroidStore: AsteroidStore
+) => {
   // Load texture
   const texture = await PIXI.Assets.load("/asteroid.png");
 
   for (let i = 0; i < config.amount.asteroid; i++) {
     const asteroid = await initAsteroid(app, texture);
-    asteroidsStore.push(asteroid);
+    asteroidStore.pushAsteroid(asteroid);
   }
 };

@@ -1,18 +1,25 @@
 import * as PIXI from "pixi.js";
 import { config } from "../config";
+import { Player } from "../classes";
 
 export const initPlayer = async (app: PIXI.Application<PIXI.Renderer>) => {
-  const playerTexture = await PIXI.Assets.load("/player-ship.png");
-  const player = new PIXI.Sprite(playerTexture);
+  // Load texture
+  const texture = await PIXI.Assets.load("/player-ship.png");
+  // Create a sprite
+  const playerSprite = new PIXI.Sprite(texture);
+  // Add sprite to the app
+  app.stage.addChild(playerSprite);
 
-  player.x = app.canvas.width / 2;
-  player.y = app.canvas.height - player.height;
+  const player = new Player();
 
-  player.setSize(config.size.player);
+  player.initSprite = playerSprite;
 
-  player.anchor.set(0.5, 0);
+  player.currentSprite.setSize(config.size.player);
 
-  app.stage.addChild(player);
+  player.currentSprite.x = app.canvas.width / 2;
+  player.currentSprite.y = app.canvas.height - player.currentSprite.height;
+
+  player.currentSprite.anchor.set(0.5, 0);
 
   return player;
 };

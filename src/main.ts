@@ -1,12 +1,18 @@
 import * as PIXI from "pixi.js";
 import "./style.css";
 
-import { initBackground, initPlayer } from "./initializers";
+import {
+  initAsteroidStore,
+  initAsteroids,
+  initBackground,
+  initPlayer,
+} from "./initializers";
 import { config } from "./config";
-import { Asteroid } from "./classes";
-import { initAsteroids } from "./initializers/asteroid";
+import { Bullet } from "./classes";
+import { handleBulletMovement, initBullet } from "./initializers/bullet";
+import { isDefeated } from "./utils";
 
-export const asteroidsStore: Asteroid[] = [];
+export const bulletBossStore: Bullet[] = [];
 
 (async () => {
   const app = new PIXI.Application();
@@ -20,32 +26,87 @@ export const asteroidsStore: Asteroid[] = [];
 
   await initBackground(app);
   const player = await initPlayer(app);
-  await initAsteroids(app);
+  const asteroidStore = await initAsteroidStore();
+  await initAsteroids(app, asteroidStore);
+  await PIXI.Assets.load("./Starjedi.ttf");
+
+  const text = new PIXI.Text({
+    text: `Bullets left: ${config.amount.playerBullets - player.shootsAmount}`,
+    style: {
+      fontFamily: "Starjedi",
+      fontSize: 28,
+      fill: 0xffffff, // white color
+      align: "center",
+    },
+    x: 10,
+    y: 10,
+  });
+
+  const bigText = new PIXI.Text({
+    text: "",
+    style: {
+      fontFamily: "Starjedi",
+      fontSize: 48,
+      fill: 0xffffff, // white color
+      align: "center",
+    },
+    anchor: 0.5,
+    x: app.canvas.width / 2,
+    y: app.canvas.height / 2,
+    zIndex: 2,
+  });
+
+  app.stage.addChild(text);
 
   window.addEventListener("keydown", async (event) => {
     if (event.key === config.keyBindings.left) {
-      if (player.x - config.step.player - player.width / 2 >= 0) {
-        player.x -= config.step.player;
+      if (
+        player.currentSprite.x -
+          config.step.player -
+          player.currentSprite.width / 2 >=
+        0
+      ) {
+        player.currentSprite.x -= config.step.player;
         return;
       }
 
-      player.x = player.x;
+      player.currentSprite.x = player.currentSprite.x;
     }
 
     if (event.key === config.keyBindings.right) {
       if (
-        player.x + config.step.player + player.width / 2 <=
+        player.currentSprite.x +
+          config.step.player +
+          player.currentSprite.width / 2 <=
         app.canvas.width
       ) {
-        player.x += config.step.player;
+        player.currentSprite.x += config.step.player;
         return;
       }
 
-      player.x = player.x;
+      player.currentSprite.x = player.currentSprite.x;
     }
 
     if (event.key === config.keyBindings.shoot) {
-      console.log(asteroidsStore);
+      if (isDefeated(player)) {
+        bigText.text = "You're defeated, try again!";
+
+        app.stage.addChild(bigText);
+        return;
+      }
+
+      const bullet = await initBullet(player);
+
+      app.stage.addChild(bullet.currentGraphics);
+      const tickerCallback = () =>
+        handleBulletMovement(app, bullet, tickerCallback, asteroidStore);
+      app.ticker.add(tickerCallback);
+
+      player.pushBullet(bullet);
+
+      const bulletsLeft = config.amount.playerBullets - player.shootsAmount;
+
+      text.text = `Bullets left: ${bulletsLeft}`;
     }
   });
 })();

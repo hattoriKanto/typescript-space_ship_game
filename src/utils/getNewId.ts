@@ -1,7 +1,7 @@
-import { asteroidsStore } from "../main";
+import { Asteroid, Bullet } from "../classes";
 
-export const getNewID = () => {
-  const ids = asteroidsStore.map((asteroid) => asteroid.currentId);
+export const getNewID = (array: Asteroid[] | Bullet[]) => {
+  const ids = array.map((value) => value.currentId);
 
   const maxId = ids.length > 0 ? Math.max(...ids) : 0;
 
