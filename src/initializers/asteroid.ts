@@ -2,11 +2,7 @@ import * as PIXI from "pixi.js";
 import { Asteroid } from "../classes";
 import { getRandomPosition, getMovementDirection } from "../utils";
 import { config } from "../config";
-import {
-  addAsteroidTicker,
-  asteroidMovementTicker,
-  asteroidRotationTicker,
-} from "../tickers";
+import { addAsteroidTicker } from "../tickers";
 import { AsteroidStore } from "../classes/AsteroidStore";
 
 export const initAsteroid = async (

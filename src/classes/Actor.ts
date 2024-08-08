@@ -8,6 +8,7 @@ export class Actor {
   set initSprite(sprite: PIXI.Sprite) {
     this.sprite = sprite;
   }
+
   get currentSprite() {
     return this.sprite;
   }
@@ -23,6 +24,8 @@ export class Actor {
   popBullet() {
     this.bulletsStore.pop();
   }
+
+
 }
 
 export class Player extends Actor {}
